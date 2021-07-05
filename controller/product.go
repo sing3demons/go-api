@@ -58,9 +58,6 @@ func (s productController) Create(w http.ResponseWriter, r *http.Request) {
 	product.Desc = r.FormValue("desc")
 	product.Price, _ = strconv.Atoi(r.FormValue("price"))
 
-	// image := s.saveProductImage(w, r, &product)
-	// product.Image = image
-
 	resp, err := s.service.Create(&product)
 	if err != nil {
 		utils.JSON(w, http.StatusUnprocessableEntity)(map[string]interface{}{"error": err})

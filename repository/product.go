@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"fmt"
-
 	"github.com/sing3demons/api/models"
 	"gorm.io/gorm"
 )
@@ -37,9 +35,7 @@ func (r productRepository) Delete(id string) error {
 		return err
 	}
 
-	fmt.Printf("product: %v\n", product)
-
-	if err := r.db.Delete(&product).Error; err != nil {
+	if err := r.db.Unscoped().Delete(&product).Error; err != nil {
 		return err
 	}
 
@@ -47,7 +43,7 @@ func (r productRepository) Delete(id string) error {
 }
 
 func (r productRepository) GetProducts() ([]models.Product, error) {
-	var product []models.Product
+	product := []models.Product{}
 	if err := r.db.Find(&product).Error; err != nil {
 		return nil, err
 	}
@@ -63,15 +59,15 @@ func (r productRepository) GetProduct(id string) (*models.Product, error) {
 	return &product, nil
 }
 
-func (r productRepository) SaveFile(product *models.Product) (*models.Product, error) {
-	if err := r.db.Save(&product).Error; err != nil {
+func (r productRepository) Update(product *models.Product) (*models.Product, error) {
+	if err := r.db.Model(&models.Product{}).Updates(&product).Error; err != nil {
 		return nil, err
 	}
 	return product, nil
 }
 
-func (r productRepository) Update(product *models.Product) (*models.Product, error) {
-	if err := r.db.Model(&product).Updates(&product).Error; err != nil {
+func (r productRepository) SaveFile(product *models.Product) (*models.Product, error) {
+	if err := r.db.Save(&product).Error; err != nil {
 		return nil, err
 	}
 	return product, nil
