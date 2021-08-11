@@ -1,6 +1,10 @@
 package repository
 
 import (
+	"fmt"
+	"log"
+
+	"github.com/sing3demons/api/database"
 	"github.com/sing3demons/api/models"
 	"gorm.io/gorm"
 )
@@ -15,11 +19,36 @@ type ProductRepository interface {
 }
 
 type productRepository struct {
-	db *gorm.DB
+	db  *gorm.DB
+	rdb database.RedisCache
 }
 
-func NewProductRepository(db *gorm.DB) ProductRepository {
-	return &productRepository{db: db}
+func NewProductRepository(db *gorm.DB, rdb database.RedisCache) ProductRepository {
+	return &productRepository{db: db, rdb: rdb}
+}
+
+func (r productRepository) GetProducts() ([]models.Product, error) {
+	rProduct, _ := r.rdb.Get("products")
+
+	var product []models.Product = rProduct
+
+	if product != nil {
+		fmt.Println("Get...Redis")
+		product, err := r.rdb.Get("products")
+		if err != nil {
+			log.Printf("get product :%v\n", err)
+		}
+
+		return product, nil
+	}
+
+	if err := r.db.Find(&product).Error; err != nil {
+		return nil, err
+	}
+
+	r.rdb.Set("products", product)
+
+	return product, nil
 }
 
 func (r productRepository) Create(product *models.Product) (*models.Product, error) {
@@ -40,14 +69,6 @@ func (r productRepository) Delete(id string) error {
 	}
 
 	return nil
-}
-
-func (r productRepository) GetProducts() ([]models.Product, error) {
-	product := []models.Product{}
-	if err := r.db.Find(&product).Error; err != nil {
-		return nil, err
-	}
-	return product, nil
 }
 
 func (r productRepository) GetProduct(id string) (*models.Product, error) {

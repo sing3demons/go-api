@@ -40,6 +40,17 @@ func NewProductController(service service.ProductService) productController {
 	return productController{service: service}
 }
 
+func (s productController) FindAll(w http.ResponseWriter, r *http.Request) {
+	products, err := s.service.FindAll()
+
+	if err != nil {
+		utils.JSON(w, http.StatusUnprocessableEntity)(map[string]interface{}{"error": err})
+		return
+	}
+
+	utils.JSON(w, http.StatusOK)(map[string]interface{}{"product": products})
+}
+
 func (s productController) Delete(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
@@ -66,16 +77,6 @@ func (s productController) Create(w http.ResponseWriter, r *http.Request) {
 	s.saveProductImage(w, r, &product)
 
 	utils.JSON(w, http.StatusCreated)(map[string]interface{}{"product": resp})
-}
-
-func (s productController) FindAll(w http.ResponseWriter, r *http.Request) {
-	products, err := s.service.FindAll()
-	if err != nil {
-		utils.JSON(w, http.StatusUnprocessableEntity)(map[string]interface{}{"error": err})
-		return
-	}
-
-	utils.JSON(w, http.StatusOK)(map[string]interface{}{"product": products})
 }
 
 func (s productController) FindOne(w http.ResponseWriter, r *http.Request) {

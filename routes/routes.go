@@ -13,9 +13,10 @@ import (
 
 func Serve(r *mux.Router) {
 	db := database.InitDatabase()
+	rdb := database.NewRedisCache("redis:6379", 1, 10)
 	v1 := "/api/v1"
 
-	productRepository := repository.NewProductRepository(db)
+	productRepository := repository.NewProductRepository(db, rdb)
 	productService := service.NewProductService(productRepository)
 	productController := controller.NewProductController(productService)
 
