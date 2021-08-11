@@ -16,6 +16,8 @@ tmp
 
 main-app
 .env
+_pg_data
+uploads
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
