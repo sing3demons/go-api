@@ -3,6 +3,7 @@ package service
 import (
 	"log"
 
+	"github.com/sing3demons/api/database"
 	"github.com/sing3demons/api/models"
 	"github.com/sing3demons/api/repository"
 )
@@ -18,6 +19,7 @@ type ProductService interface {
 
 type productService struct {
 	repository repository.ProductRepository
+	rdb        database.RedisCache
 }
 
 func NewProductService(repository repository.ProductRepository) ProductService {
@@ -47,6 +49,7 @@ func (service productService) Create(product *models.Product) (*models.Product, 
 
 func (service productService) FindAll() ([]models.Product, error) {
 	products, err := service.repository.GetProducts()
+	// products, err
 	if err != nil {
 		log.Printf("Failed map %v: ", err)
 		return nil, err

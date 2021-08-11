@@ -152,7 +152,7 @@ func (p *productController) saveProductImage(w http.ResponseWriter, r *http.Requ
 	}
 
 	filename := path + "/" + fmt.Sprintf("%d%s", time.Now().UnixNano(), filepath.Ext(handler.Filename))
-	product.Image = os.Getenv("HOST") + "/" + filename
+	product.Image = filename
 
 	// Create a new file in the uploads directory
 	// dst, err := os.Create(fmt.Sprintf("./uploads/%d%s", time.Now().UnixNano(), filepath.Ext(handler.Filename)))

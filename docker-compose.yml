@@ -11,14 +11,19 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - ./_pg_data:/var/lib/postgresql/data
     restart: always
   redis:
-    image: redis
+    container_name: "redis"
+    image: redis:alpine
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass passw0rd
     ports:
       - 6379:6379
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
 
   web:
+    container_name: web-api
     build: .
     ports:
       - "${PORT}:${PORT}"

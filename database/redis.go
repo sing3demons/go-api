@@ -30,7 +30,7 @@ func NewRedisCache(host string, db int, exp time.Duration) RedisCache {
 func (cache *redisCache) getClient() *redis.Client {
 	return redis.NewClient(&redis.Options{
 		Addr:     cache.host,
-		Password: "",
+		Password: "passw0rd",
 		DB:       cache.db,
 	})
 }
@@ -56,7 +56,7 @@ func (cache *redisCache) Get(key string) ([]models.Product, error) {
 	rdb := cache.getClient()
 	ctx := context.Background()
 	val, err := rdb.Get(ctx, key).Result()
-	
+
 	if err != nil {
 		return nil, err
 	}
